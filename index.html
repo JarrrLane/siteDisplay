@@ -1,28 +1,131 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Days Since Last Threat</title>
+    <style>
+        /* Smooth background animation for a subtle liquid/plasma feel */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Important for clean animations */
+            background: linear-gradient(135deg, #1a012e, #0e0019, #2c0147, #0f001c); /* Deep, dark purples */
+            background-size: 400% 400%; /* Larger than viewport to allow movement */
+            animation: gradientAnimation 20s ease infinite; /* Slow, smooth fade/shift */
+            position: relative; /* For particle absolute positioning */
+            color: #ffffff;
+            /* Ensure smooth animations for all properties */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Particle effect container */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows interaction with elements behind particles */
+            z-index: 0; /* Behind the main content */
+            overflow: hidden; /* Crucial to contain particles */
+        }
+
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.4); /* Slightly transparent white/grey */
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(140, 255, 234, 0.6); /* Soft glowing effect */
+            animation: particle-float 20s infinite ease-in-out alternate; /* Smoother, bouncier motion */
+            opacity: 0;
+            transition: opacity 1s; /* Smooth fade in/out for particles */
+        }
+
+        /* Generic particle animation, individual delays and sizes set via JS */
+        @keyframes particle-float {
+            0% { transform: translate(var(--start-x), var(--start-y)) scale(0.5); opacity: 0; }
+            20% { opacity: 1; transform: translate(var(--mid-x1), var(--mid-y1)) scale(var(--scale)); }
+            80% { opacity: 1; transform: translate(var(--mid-x2), var(--mid-y2)) scale(var(--scale)); }
+            100% { transform: translate(var(--end-x), var(--end-y)) scale(0.5); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.08); /* Frosted glass background */
+            border-radius: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            border-left: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* Soft shadow for depth */
+            backdrop-filter: blur(12px); /* Key for the glass effect */
+            -webkit-backdrop-filter: blur(12px); /* For Safari compatibility */
+            padding: 50px 70px;
+            text-align: center;
+            color: #ffffff;
+            overflow: hidden; /* Contains the swipe effect */
+            z-index: 10; /* Above particles */
+            transition: all 0.3s ease; /* Smooth hover animations */
+            max-width: 90%; /* Responsive sizing */
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent); /* Light swipe effect */
+            transition: 0.9s;
+            z-index: -1;
+            transform: skewX(-30deg); /* Angled swipe */
+        }
+
+        .container:hover::before {
+            left: 150%; /* Swipe across on hover */
+        }
 
         .container:hover {
-            transform: translateY(-5px) scale(1.02); /* Slight lift and scale on hover */
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Enhanced shadow on hover */
+            transform: translateY(-5px) scale(1.02); /* Subtle lift and scale */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
         }
 
         h1 {
             font-size: 2.8em;
             margin-bottom: 25px;
             letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 25px rgba(255, 255, 255, 0.4);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7), 0 0 25px rgba(255, 255, 255, 0.4); /* Text glow */
+            word-break: break-word;
         }
 
         .number {
-            font-size: 9em; /* Even larger number */
+            font-size: 9em;
             font-weight: bold;
-            color: #8cffea;
-            text-shadow: 0 0 25px #8cffea, 0 0 40px #8cffea, 0 0 60px #8cffea; /* More intense glow */
-            letter-spacing: 8px; /* More spacing */
-            transition: color 0.5s ease; /* Smooth color transition */
+            color: #8cffea; /* Bright teal for the number */
+            text-shadow: 0 0 25px #8cffea, 0 0 40px #8cffea, 0 0 60px #8cffea; /* Intense glow */
+            letter-spacing: 8px;
+            transition: color 0.5s ease;
         }
 
-        .number:hover {
-            color: #aaffff; /* Slightly different glow on hover */
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container { padding: 30px 40px; }
+            h1 { font-size: 2em; }
+            .number { font-size: 6em; letter-spacing: 4px; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: 1.5em; margin-bottom: 15px; }
+            .number { font-size: 4em; letter-spacing: 2px; }
         }
     </style>
 </head>
@@ -46,32 +149,47 @@
 
             document.getElementById('threatDays').innerText = daysNumber;
 
-            // Generate particles dynamically with random positions and movement
+            // Particle generation
             const particlesContainer = document.getElementById('particles-container');
-            for (let i = 0; i < 30; i++) { // Generate 30 particles
+            const numParticles = 40; // More particles for a denser effect
+
+            for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
                 
-                const size = Math.random() * 4 + 2; // Size between 2px and 6px
+                const size = Math.random() * 3 + 1; // Size between 1px and 4px
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-
-                const top = Math.random() * 100;
-                const left = Math.random() * 100;
-                particle.style.top = `${top}%`;
-                particle.style.left = `${left}%`;
-
-                const delay = Math.random() * 20; // Animation delay up to 20 seconds
-                particle.style.animationDelay = `${delay}s`;
-
-                // Random target for particle movement
-                const randX = (Math.random() - 0.5) * 100; // -50 to 50
-                const randY = (Math.random() - 0.5) * 100; // -50 to 50
                 
-                // Set CSS variables for keyframe animation
-                particle.style.setProperty('--rand-x', randX);
-                particle.style.setProperty('--rand-y', randY);
+                // Random start/end points for floating
+                const startX = `${Math.random() * 100}vw`;
+                const startY = `${Math.random() * 100}vh`;
 
+                const midX1 = `${(Math.random() * 200) - 50}vw`; // Wider range for movement
+                const midY1 = `${(Math.random() * 200) - 50}vh`;
+                
+                const midX2 = `${(Math.random() * 200) - 50}vw`;
+                const midY2 = `${(Math.random() * 200) - 50}vh`;
+
+                const endX = `${Math.random() * 100}vw`;
+                const endY = `${Math.random() * 100}vh`;
+
+                const animationDuration = Math.random() * 20 + 15; // Animation duration 15-35s
+                const animationDelay = Math.random() * 20; // Delay up to 20s
+
+                particle.style.setProperty('--start-x', startX);
+                particle.style.setProperty('--start-y', startY);
+                particle.style.setProperty('--mid-x1', midX1);
+                particle.style.setProperty('--mid-y1', midY1);
+                particle.style.setProperty('--mid-x2', midX2);
+                particle.style.setProperty('--mid-y2', midY2);
+                particle.style.setProperty('--end-x', endX);
+                particle.style.setProperty('--end-y', endY);
+                particle.style.setProperty('--scale', Math.random() * 1 + 0.5); // Scale between 0.5 and 1.5
+
+                particle.style.animationDuration = `${animationDuration}s`;
+                particle.style.animationDelay = `${animationDelay}s`;
+                
                 particlesContainer.appendChild(particle);
             }
         });
